@@ -167,7 +167,7 @@ export default function BookAppointmentPage() {
                                <input 
                                   required
                                   type="text" 
-                                  placeholder="John Doe" 
+                                  placeholder="Yash Rajak" 
                                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-500"
                                />
                             </div>
@@ -181,7 +181,7 @@ export default function BookAppointmentPage() {
                                <input 
                                   required
                                   type="tel" 
-                                  placeholder="(555) 000-0000" 
+                                  placeholder="9561829120" 
                                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-500"
                                />
                             </div>
