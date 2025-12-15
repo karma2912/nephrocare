@@ -55,81 +55,81 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 to-white">
       
-      {/* Hero Section - Enhanced */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Hero Section - Mobile Optimized */}
+      <section className="relative pt-24 md:pt-32 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-10 md:top-20 left-5 md:left-10 w-48 md:w-72 h-48 md:h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 md:bottom-20 right-5 md:right-10 w-64 md:w-96 h-64 md:h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             
             {/* Left Content */}
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-2">
-                <Sparkles size={16} className="text-blue-600" />
-                <span className="text-sm font-semibold text-blue-700">Introducing NephroCare+ AI Suite</span>
+            <div className="space-y-6 md:space-y-8 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-3 md:px-4 py-1.5 md:py-2 mx-auto lg:mx-0">
+                <Sparkles size={14} className="text-blue-600" />
+                <span className="text-xs md:text-sm font-semibold text-blue-700">Introducing NephroCare+ AI Suite</span>
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-bold text-slate-900 leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-900 leading-tight">
                 Dialysis Care
                 <span className="block text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">
                   Powered by AI
                 </span>
               </h1>
 
-              <p className="text-xl text-slate-600 leading-relaxed">
+              <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
                 World-class dialysis treatment enhanced with deep learning. Monitor comorbidities, prevent complications, and travel freely—all in one integrated platform.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                 <a 
                   href="/smart-screening" 
-                  className="inline-flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl hover:shadow-blue-600/30 hover:scale-105 transition-all duration-300 group"
+                  className="inline-flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:shadow-xl hover:shadow-blue-600/30 hover:scale-105 transition-all duration-300 group"
                 >
-                  <Zap size={20} />
+                  <Zap size={18} />
                   <span>Try AI Screening</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={16}  className="group-hover:translate-x-1 transition-transform" />
                 </a>
                 
                 <a 
                   href="/services" 
-                  className="inline-flex items-center justify-center gap-2 bg-white border-2 border-slate-200 text-slate-700 px-8 py-4 rounded-full font-semibold hover:border-slate-300 hover:shadow-lg transition-all duration-300"
+                  className="inline-flex items-center justify-center gap-2 bg-white border-2 border-slate-200 text-slate-700 px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:border-slate-300 hover:shadow-lg transition-all duration-300"
                 >
-                  <Stethoscope size={20} />
+                  <Stethoscope size={18} />
                   <span>Our Services</span>
                 </a>
               </div>
 
-              {/* Trust Metrics */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-slate-200">
+              {/* Trust Metrics - Mobile Optimized */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 pt-6 md:pt-8 border-t border-slate-200">
                 {trustMetrics.map((metric, idx) => (
                   <div key={idx} className="text-center">
-                    <div className="flex justify-center mb-2 text-blue-600">
+                    <div className="flex justify-center mb-1 md:mb-2 text-blue-600">
                       {metric.icon}
                     </div>
-                    <div className="text-2xl font-bold text-slate-900">{metric.value}</div>
-                    <div className="text-sm text-slate-600">{metric.label}</div>
+                    <div className="text-xl md:text-2xl font-bold text-slate-900">{metric.value}</div>
+                    <div className="text-xs md:text-sm text-slate-600">{metric.label}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right Visual */}
-            <div className="relative">
-              <div className="relative bg-linear-to-br from-slate-100 to-slate-50 rounded-3xl p-8 shadow-2xl border border-slate-200">
-                <div className="aspect-square bg-linear-to-br from-blue-50 to-purple-50 rounded-2xl flex items-center justify-center relative overflow-hidden">
+            {/* Right Visual - Mobile Optimized */}
+            <div className="relative mt-8 lg:mt-0">
+              <div className="relative bg-linear-to-br from-slate-100 to-slate-50 rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-2xl border border-slate-200">
+                <div className="aspect-square bg-linear-to-br from-blue-50 to-purple-50 rounded-xl md:rounded-2xl flex items-center justify-center relative overflow-hidden">
                   {/* Placeholder for hero visual */}
                   <div className="absolute inset-0 bg-linear-to-br from-blue-600/10 to-purple-600/10"></div>
-                  <div className="relative z-10 text-center space-y-4">
-                    <div className="w-24 h-24 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center">
-                      <Activity size={48} className="text-blue-600" />
+                  <div className="relative z-10 text-center space-y-3 md:space-y-4 px-4">
+                    <div className="w-16 md:w-24 h-16 md:h-24 mx-auto bg-white rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center">
+                      <Activity size={32}className="text-blue-600" />
                     </div>
                     <div className="space-y-2">
-                      <div className="text-sm font-semibold text-slate-600">Real-time Health Monitoring</div>
-                      <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-md">
+                      <div className="text-xs md:text-sm font-semibold text-slate-600">Real-time Health Monitoring</div>
+                      <div className="inline-flex items-center gap-2 bg-white px-3 md:px-4 py-1.5 md:py-2 rounded-full shadow-md">
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                         <span className="text-xs font-medium text-slate-700">AI Models Active</span>
                       </div>
@@ -137,27 +137,27 @@ export default function LandingPage() {
                   </div>
                 </div>
                 
-                {/* Floating Cards */}
-                <div className="absolute -left-4 top-1/4 bg-white rounded-xl p-4 shadow-xl animate-float">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <CheckCircle2 size={20} className="text-green-600" />
+                {/* Floating Cards - Hidden on smallest screens */}
+                <div className="hidden sm:block absolute -left-2 md:-left-4 top-1/4 bg-white rounded-lg md:rounded-xl p-3 md:p-4 shadow-xl animate-float">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="w-8 md:w-10 h-8 md:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <CheckCircle2 size={16}  className="text-green-600" />
                     </div>
                     <div>
-                      <div className="text-xs text-slate-500">Scan Complete</div>
-                      <div className="text-sm font-bold text-slate-900">No Risks Detected</div>
+                      <div className="text-[10px] md:text-xs text-slate-500">Scan Complete</div>
+                      <div className="text-xs md:text-sm font-bold text-slate-900">No Risks</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute -right-4 bottom-1/4 bg-white rounded-xl p-4 shadow-xl animate-float" style={{animationDelay: '1s'}}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Brain size={20} className="text-blue-600" />
+                <div className="hidden sm:block absolute -right-2 md:-right-4 bottom-1/4 bg-white rounded-lg md:rounded-xl p-3 md:p-4 shadow-xl animate-float" style={{animationDelay: '1s'}}>
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="w-8 md:w-10 h-8 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Brain size={16}  className="text-blue-600" />
                     </div>
                     <div>
-                      <div className="text-xs text-slate-500">MRI Analysis</div>
-                      <div className="text-sm font-bold text-slate-900">94% Confidence</div>
+                      <div className="text-[10px] md:text-xs text-slate-500">MRI Analysis</div>
+                      <div className="text-xs md:text-sm font-bold text-slate-900">94% Confidence</div>
                     </div>
                   </div>
                 </div>
@@ -167,60 +167,60 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* AI Features Section - Enhanced */}
-      <section className="py-24 bg-white" id="ai-models">
+      {/* AI Features Section - Mobile Optimized */}
+      <section className="py-16 md:py-24 bg-white" id="ai-models">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 rounded-full px-4 py-2">
-              <Sparkles size={14} className="text-purple-600" />
-              <span className="text-xs font-bold text-purple-700 uppercase tracking-wider">Deep Learning Models</span>
+          <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-3 md:space-y-4">
+            <div className="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 rounded-full px-3 md:px-4 py-1.5 md:py-2">
+              <Sparkles size={12}  className="text-purple-600" />
+              <span className="text-[10px] md:text-xs font-bold text-purple-700 uppercase tracking-wider">Deep Learning Models</span>
             </div>
             
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 px-4">
               Comorbidity Management
               <span className="block text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">
                 That Predicts & Prevents
               </span>
             </h2>
             
-            <p className="text-lg text-slate-600">
+            <p className="text-base md:text-lg text-slate-600 px-4">
               Kidney disease doesn't happen in isolation. Our AI suite monitors critical secondary risks before they become emergencies.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {aiFeatures.map((feature, idx) => (
               <div 
                 key={idx}
-                className="group relative bg-linear-to-br from-white to-slate-50 rounded-2xl p-8 border border-slate-200 hover:border-transparent hover:shadow-2xl transition-all duration-500"
+                className="group relative bg-linear-to-br from-white to-slate-50 rounded-xl md:rounded-2xl p-6 md:p-8 border border-slate-200 hover:border-transparent hover:shadow-2xl transition-all duration-500"
               >
                 {/* Gradient Border on Hover */}
-                <div className={`absolute inset-0 rounded-2xl bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity -z-10 blur-xl`}></div>
+                <div className={`absolute inset-0 rounded-xl md:rounded-2xl bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity -z-10 blur-xl`}></div>
                 
-                <div className={`w-16 h-16 bg-linear-to-br ${feature.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
+                <div className={`w-14 md:w-16 h-14 md:h-16 bg-linear-to-br ${feature.gradient} rounded-xl md:rounded-2xl flex items-center justify-center text-white mb-4 md:mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
                   {feature.icon}
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   <div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2">{feature.title}</h3>
-                    <div className={`inline-flex items-center gap-1 text-xs font-bold text-${feature.color}-700 bg-${feature.color}-50 px-3 py-1 rounded-full`}>
-                      <TrendingUp size={12} />
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">{feature.title}</h3>
+                    <div className={`inline-flex items-center gap-1 text-xs font-bold text-${feature.color}-700 bg-${feature.color}-50 px-2 md:px-3 py-1 rounded-full`}>
+                      <TrendingUp size={10}  />
                       {feature.stats}
                     </div>
                   </div>
                   
-                  <p className="text-slate-600 leading-relaxed">
+                  <p className="text-sm md:text-base text-slate-600 leading-relaxed">
                     {feature.description}
                   </p>
 
                   <a 
                     href={feature.href}
-                    className={`inline-flex items-center gap-2 text-${feature.color}-700 font-semibold group-hover:gap-3 transition-all`}
+                    className={`inline-flex items-center gap-2 text-${feature.color}-700 font-semibold group-hover:gap-3 transition-all text-sm md:text-base`}
                   >
                     <span>Start Screening</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={14}  />
                   </a>
                 </div>
               </div>
@@ -229,94 +229,94 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Holiday Dialysis Section - Redesigned */}
-      <section className="py-24 bg-linear-to-br from-slate-50 to-blue-50">
+      {/* Holiday Dialysis Section - Mobile Optimized */}
+      <section className="py-16 md:py-24 bg-linear-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
             
             {/* Visual */}
             <div className="relative order-2 lg:order-1">
-              <div className="aspect-square bg-linear-to-br from-blue-100 to-blue-50 rounded-3xl overflow-hidden shadow-2xl border border-blue-200 flex items-center justify-center relative">
+              <div className="aspect-square bg-linear-to-br from-blue-100 to-blue-50 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-blue-200 flex items-center justify-center relative">
                 <div className="absolute inset-0 bg-linear-to-br from-blue-600/5 to-transparent"></div>
-                <div className="relative z-10 text-center space-y-6">
-                  <MapPin size={64} className="text-blue-600 mx-auto" />
+                <div className="relative z-10 text-center space-y-4 md:space-y-6 px-4">
+                  <MapPin size={48}  className="text-blue-600 mx-auto" />
                   <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-lg">
-                      <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                      <span className="text-sm font-bold text-slate-700">Finding nearest clinic...</span>
+                    <div className="inline-flex items-center gap-2 bg-white px-4 md:px-6 py-2 md:py-3 rounded-full shadow-lg">
+                      <span className="w-2 md:w-3 h-2 md:h-3 bg-green-500 rounded-full animate-pulse"></span>
+                      <span className="text-xs md:text-sm font-bold text-slate-700">Finding nearest clinic...</span>
                     </div>
-                    <p className="text-sm text-slate-600">Global Network Active</p>
+                    <p className="text-xs md:text-sm text-slate-600">Global Network Active</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Content */}
-            <div className="space-y-6 order-1 lg:order-2">
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-2">
-                <MapPin size={14} className="text-blue-600" />
-                <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Travel Freedom</span>
+            <div className="space-y-4 md:space-y-6 order-1 lg:order-2">
+              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-3 md:px-4 py-1.5 md:py-2">
+                <MapPin size={12}  className="text-blue-600" />
+                <span className="text-[10px] md:text-xs font-bold text-blue-700 uppercase tracking-wider">Travel Freedom</span>
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
                 Holiday Dialysis.
                 <span className="block text-blue-600">Travel without boundaries.</span>
               </h2>
 
-              <p className="text-lg text-slate-600 leading-relaxed">
+              <p className="text-base md:text-lg text-slate-600 leading-relaxed">
                 Don't let your schedule trap you. With over 4,000 NephroCare centers globally, our Travel Freedom Planner syncs your medical data automatically.
               </p>
 
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 {[
                   'Global standardization of care protocols',
                   'Seamless medical record transfer via blockchain',
                   'Instant slot booking through mobile app',
                   'Pre-travel health check with AI screening'
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className="mt-0.5 p-1.5 bg-green-100 rounded-full text-green-600">
-                      <CheckCircle2 size={16} />
+                  <div key={idx} className="flex items-start gap-2 md:gap-3">
+                    <div className="mt-0.5 p-1 md:p-1.5 bg-green-100 rounded-full text-green-600 shrink-0">
+                      <CheckCircle2 size={14}  />
                     </div>
-                    <span className="text-slate-700 font-medium">{item}</span>
+                    <span className="text-sm md:text-base text-slate-700 font-medium">{item}</span>
                   </div>
                 ))}
               </div>
 
               <a 
                 href="/services/holiday-dialysis" 
-                className="inline-flex items-center gap-2 text-blue-700 font-bold text-lg group"
+                className="inline-flex items-center gap-2 text-blue-700 font-bold text-base md:text-lg group"
               >
                 <span>Explore Travel Planner</span>
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={18}  className="group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section - Enhanced */}
-      <section className="relative py-24 overflow-hidden">
+      {/* CTA Section - Mobile Optimized */}
+      <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-br from-blue-900 via-blue-800 to-slate-900"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
         
-        <div className="relative max-w-4xl mx-auto px-4 text-center space-y-8 text-white">
-          <h2 className="text-4xl md:text-5xl font-bold">
+        <div className="relative max-w-4xl mx-auto px-4 text-center space-y-6 md:space-y-8 text-white">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
             Ready to experience AI-powered dialysis care?
           </h2>
           
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+          <p className="text-base md:text-xl text-blue-100 max-w-2xl mx-auto">
             Join thousands of patients using NephroCare+ for safer, smarter treatment with real-time comorbidity monitoring.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <button className="inline-flex items-center justify-center gap-2 bg-white text-blue-900 px-8 py-4 rounded-full font-bold hover:scale-105 hover:shadow-2xl transition-all duration-300">
-              <MapPin size={20} />
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-4">
+            <button className="inline-flex items-center justify-center gap-2 bg-white text-blue-900 px-6 md:px-8 py-3 md:py-4 rounded-full font-bold hover:scale-105 hover:shadow-2xl transition-all duration-300">
+              <MapPin size={18}  />
               <span>Find Your Center</span>
             </button>
             
-            <button className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-blue-900 transition-all duration-300">
-              <Sparkles size={20} />
+            <button className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-white hover:text-blue-900 transition-all duration-300">
+              <Sparkles size={18}  />
               <span>Try AI Screening</span>
             </button>
           </div>
