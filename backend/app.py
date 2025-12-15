@@ -1,0 +1,312 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torchvision import models
+from PIL import Image
+import os
+import numpy as np
+import base64
+from io import BytesIO
+import traceback
+import uuid
+from werkzeug.utils import secure_filename
+
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+import timm
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+from pytorch_grad_cam import GradCAM, GradCAMPlusPlus
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
+
+app = Flask(__name__)
+origins = [
+    "http://localhost:3000",
+    r"https?://.*\.netlify\.app"
+]
+CORS(app, resources={
+    r"/api/*": {"origins": origins},
+    r"/static/uploads/*": {"origins": origins}  # Add this line
+})
+
+# --- General Configuration ---
+MODEL_DIR = os.path.join(os.path.dirname(__file__), 'model')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"✅ Using device: {device}")
+
+# --- Configure Gemini API ---
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    print("⚠️ WARNING: GEMINI_API_KEY environment variable not set. AI Summaries will be disabled.")
+else:
+    genai.configure(api_key=GEMINI_API_KEY)
+    print("✅ Gemini API configured successfully.")
+
+# =============================================================================
+# SKIN LESION MODEL DEFINITION
+# =============================================================================
+class EnhancedModel(nn.Module):
+    """Enhanced model with better regularization and multi-scale features."""
+    def __init__(self, model_name, num_classes, dropout_rate=0.3):
+        super(EnhancedModel, self).__init__()
+        self.backbone = timm.create_model(model_name, pretrained=True, num_classes=0, global_pool='')
+        
+        with torch.no_grad():
+            dummy_input = torch.randn(1, 3, 224, 224)
+            features = self.backbone(dummy_input)
+            feature_dim = features.shape[1]
+
+        self.global_avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.global_max_pool = nn.AdaptiveMaxPool2d(1)
+
+        self.classifier = nn.Sequential(
+            nn.Dropout(dropout_rate),
+            nn.Linear(feature_dim * 2, feature_dim),
+            nn.BatchNorm1d(feature_dim),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout_rate * 0.5),
+            nn.Linear(feature_dim, feature_dim // 2),
+            nn.BatchNorm1d(feature_dim // 2),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout_rate * 0.25),
+            nn.Linear(feature_dim // 2, num_classes)
+        )
+
+    def forward(self, x):
+        features = self.backbone(x)
+        avg_pool = self.global_avg_pool(features).flatten(1)
+        max_pool = self.global_max_pool(features).flatten(1)
+        combined = torch.cat([avg_pool, max_pool], dim=1)
+        return self.classifier(combined)
+
+
+CHEST_MODEL_PATH = os.path.join(MODEL_DIR, "best_covid_model.pth")
+CHEST_LABELS = ['Normal', 'COVID', 'Lung_Opacity', 'Viral_Pneumonia']
+chest_transform = A.Compose([
+    A.Resize(224, 224),
+    A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ToTensorV2()
+])
+
+# BRAIN TUMOR (MRI) CONFIGURATION
+BRAIN_MODEL_PATH = os.path.join(MODEL_DIR, 'densenet_brain_tumor_v3.pth')
+BRAIN_LABELS = ['glioma', 'meningioma', 'notumor', 'pituitary']
+brain_transform = A.Compose([
+    A.Resize(224, 224),
+    A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ToTensorV2()
+])
+
+# SKIN LESION (DERMOSCOPY) CONFIGURATION
+SKIN_MODEL_PATH = os.path.join(MODEL_DIR, 'skin-model.pth')
+SKIN_MODEL_NAME = 'tf_efficientnet_b3.ns_jft_in1k'
+SKIN_IMG_SIZE = 256
+SKIN_NUM_CLASSES = 7
+SKIN_DROPOUT_RATE = 0.4
+SKIN_LABELS_SHORT = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
+SKIN_LABELS_FULL = {
+    'akiec': 'Actinic Keratoses', 'bcc': 'Basal Cell Carcinoma',
+    'bkl': 'Benign Keratosis-like Lesions', 'df': 'Dermatofibroma',
+    'mel': 'Melanoma', 'nv': 'Melanocytic Nevi', 'vasc': 'Vascular Lesions'
+}
+skin_transform = A.Compose([
+    A.Resize(SKIN_IMG_SIZE, SKIN_IMG_SIZE),
+    A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ToTensorV2(),
+])
+
+# =============================================================================
+# LAZY LOADING SETUP
+# =============================================================================
+print("🚀 AnYa Med AI Server starting up...")
+chest_model, brain_model, skin_model = None, None, None
+print("🎉 Server is ready. Models will be loaded on demand.")
+
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+def load_chest_model():
+    model = models.densenet121(weights=None)
+    model.classifier = nn.Linear(1024, len(CHEST_LABELS))
+    checkpoint = torch.load(CHEST_MODEL_PATH, map_location=device)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    model.to(device)
+    model.eval()
+    return model
+
+def load_brain_model():
+    model = models.densenet121(weights=None)
+    model.classifier = nn.Linear(model.classifier.in_features, len(BRAIN_LABELS))
+    model.load_state_dict(torch.load(BRAIN_MODEL_PATH, map_location=device))
+    model.to(device)
+    model.eval()
+    return model
+
+def load_skin_model():
+    model = EnhancedModel(model_name=SKIN_MODEL_NAME, num_classes=SKIN_NUM_CLASSES, dropout_rate=SKIN_DROPOUT_RATE)
+    model.load_state_dict(torch.load(SKIN_MODEL_PATH, map_location=device))
+    model.to(device)
+    model.eval()
+    return model
+
+def process_image(image: Image.Image, transform):
+    image_rgb = image.convert("RGB")
+    image_np = np.array(image_rgb)
+    transformed = transform(image=image_np)
+    return transformed['image'].unsqueeze(0).to(device)
+
+def predict_model(image_tensor, model, labels):
+    with torch.no_grad():
+        outputs = model(image_tensor)
+        probs = F.softmax(outputs, dim=1).cpu().numpy()[0]
+        predicted_idx = np.argmax(probs)
+        return labels[predicted_idx], float(probs[predicted_idx]), probs
+
+def generate_ai_summary(model_name, diagnosis, confidence):
+    # Temporarily disable the API call by returning a placeholder immediately
+    # return "AI Summary feature is temporarily disabled. Please configure your Gemini API Key."
+    
+    # --- The original code is kept below but will not run ---
+    if not GEMINI_API_KEY:
+        return "AI Summary feature is disabled. Please configure your Gemini API Key."
+    prompts = {
+        "chest": f"As a medical scribe summarizing an AI analysis of a chest X-ray...",
+        "brain": f"As a medical scribe summarizing an AI analysis of a brain MRI...",
+        "skin": f"As a medical scribe summarizing an AI analysis of a dermoscopic image..."
+    }
+    prompt = prompts.get(model_name, f"Provide a brief summary for the medical finding: {diagnosis}")
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print(f"❌ Gemini API Error: {e}")
+        return "Could not generate AI summary due to an API error."
+
+def generate_gradcam_and_save(model, target_layer, image_tensor, orig_image: Image.Image, class_idx, original_filename, img_size=224, cam_method=GradCAM):
+    orig_np = np.array(orig_image.convert("RGB").resize((img_size, img_size))).astype(np.float32) / 255.0
+    cam = cam_method(model=model, target_layers=[target_layer])
+    targets = [ClassifierOutputTarget(class_idx)]
+    grayscale_cam = cam(input_tensor=image_tensor, targets=targets)[0, :]
+    cam_image = show_cam_on_image(orig_np, grayscale_cam, use_rgb=True)
+    pil_image = Image.fromarray(cam_image)
+    
+    heatmap_filename = f"heatmap_{original_filename}"
+    upload_folder = os.path.join('static', 'uploads')
+    heatmap_path = os.path.join(upload_folder, heatmap_filename)
+    pil_image.save(heatmap_path)
+    print(f"✅ Saved heatmap to: {heatmap_path}")
+    
+    return f"/static/uploads/{heatmap_filename}"
+
+# =============================================================================
+# MAIN REQUEST PROCESSING FUNCTION
+# =============================================================================
+def process_request(request, model_name):
+    global chest_model, brain_model, skin_model
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+    
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    
+    try:
+        filename = secure_filename(f"{uuid.uuid4()}_{file.filename}")
+        upload_folder = os.path.join('static', 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        image_path = os.path.join(upload_folder, filename)
+        file.stream.seek(0)
+        file.save(image_path)
+        print(f"✅ Saved original image to: {image_path}")
+
+        image = Image.open(image_path).convert("RGB")
+        
+        if model_name == 'chest':
+            if chest_model is None:
+                print(" * Loading Chest X-Ray model...")
+                chest_model = load_chest_model()
+            target_layer = chest_model.features.denseblock4.denselayer16.conv2
+            image_tensor = process_image(image, chest_transform)
+            label, prob, all_probs = predict_model(image_tensor, chest_model, CHEST_LABELS)
+            class_idx = CHEST_LABELS.index(label)
+            heatmap_path = generate_gradcam_and_save(chest_model, target_layer, image_tensor, image, class_idx, filename, cam_method=GradCAMPlusPlus)
+            labels_list = CHEST_LABELS
+        
+        elif model_name == 'brain':
+            if brain_model is None:
+                print(" * Loading Brain Tumor model...")
+                brain_model = load_brain_model()
+            target_layer = brain_model.features.denseblock4.denselayer16.conv2
+            image_tensor = process_image(image, brain_transform)
+            label, prob, all_probs = predict_model(image_tensor, brain_model, BRAIN_LABELS)
+            class_idx = BRAIN_LABELS.index(label)
+            heatmap_path = generate_gradcam_and_save(brain_model, target_layer, image_tensor, image, class_idx, filename, cam_method=GradCAMPlusPlus)
+            labels_list = BRAIN_LABELS
+
+        elif model_name == 'skin':
+            if skin_model is None:
+                print(" * Loading Skin Lesion model...")
+                skin_model = load_skin_model()
+            target_layer = skin_model.backbone.conv_head
+            image_tensor = process_image(image, skin_transform)
+            label_short, prob, all_probs = predict_model(image_tensor, skin_model, SKIN_LABELS_SHORT)
+            label = SKIN_LABELS_FULL[label_short]
+            class_idx = SKIN_LABELS_SHORT.index(label_short)
+            heatmap_path = generate_gradcam_and_save(skin_model, target_layer, image_tensor, image, class_idx, filename, img_size=SKIN_IMG_SIZE, cam_method=GradCAM)
+            labels_list = [SKIN_LABELS_FULL[l] for l in SKIN_LABELS_SHORT]
+        else:
+            return jsonify({"error": "Invalid model name specified"}), 400
+            
+        ai_summary = generate_ai_summary(model_name, label, prob)
+        
+        # Open heatmap image and encode to base64
+        heatmap_full_path = os.path.join(upload_folder, f"heatmap_{filename}")
+        with open(heatmap_full_path, 'rb') as heatmap_file:
+            heatmap_base64 = base64.b64encode(heatmap_file.read()).decode('utf-8')
+
+        result = {
+            "label": label,
+            "diagnosis": label,
+            "confidence": round(prob, 4),
+            "probabilities": [{"label": labels_list[i], "value": round(float(p), 4)} for i, p in enumerate(all_probs)],
+            "image_url": f"/static/uploads/{filename}",
+            "heatmap_url": heatmap_path,
+            "ai_summary": ai_summary,
+            "heatmap": heatmap_base64
+        }
+        return jsonify(result)
+
+    except Exception as e:
+        print(f"❌ An error occurred during {model_name} prediction: {e}")
+        traceback.print_exc()
+        return jsonify({"error": f"An error occurred processing the image for {model_name}."}), 500
+
+# =============================================================================
+# API ENDPOINTS
+# =============================================================================
+
+@app.route("/api/chest", methods=["POST"])
+def predict_chest_endpoint():
+    return process_request(request, 'chest')
+
+@app.route("/api/brain", methods=["POST"])
+def predict_brain_endpoint():
+    return process_request(request, 'brain')
+
+@app.route("/api/skin", methods=["POST"])
+def predict_skin_endpoint():
+    return process_request(request, 'skin')
+
+# =============================================================================
+# MAIN EXECUTION BLOCK
+# =============================================================================
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
