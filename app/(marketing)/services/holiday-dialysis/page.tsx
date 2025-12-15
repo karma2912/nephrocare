@@ -77,7 +77,7 @@ const HolidayDialysisPage = () => {
                     <input 
                         type="text" 
                         placeholder="Search destination..." 
-                        className="w-full bg-slate-50 pl-9 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-500"
+                        className="w-full bg-slate-50 pl-9 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-500 text-slate-600"
                     />
                 </div>
              </div>

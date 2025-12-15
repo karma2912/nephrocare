@@ -17,7 +17,7 @@ const ScreeningHub = () => {
       icon: <Activity size={32} />,
       gradient: 'from-blue-500 to-cyan-500',
       bgColor: 'bg-blue-500',
-      lightBg: 'bg-blue-50',
+      lightBg: 'bg-blue',
       textColor: 'text-blue-600',
       status: 'Scan Recommended',
       statusColor: 'bg-orange-50 text-orange-700 border-orange-200',
@@ -187,7 +187,7 @@ const ScreeningHub = () => {
                   </div>
 
                   {/* CTA */}
-                  <div className={`mt-6 flex items-center justify-between p-4 ${tool.lightBg} rounded-xl group-hover:${tool.bgColor} group-hover:text-white transition-all duration-300`}>
+                  <div className={`mt-6 flex items-center justify-between p-4 ${tool.lightBg} rounded-xl group-hover:${tool.bgColor} group-hover:text-white transition-all duration-300 text-slate-700`}>
                     <span className="font-bold">Launch Screening</span>
                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </div>
