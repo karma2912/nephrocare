@@ -21,7 +21,7 @@ const LungUploadForm = () => {
 
     try {
       // 1. Send to your Flask Backend
-      const response = await fetch(`https://nephrocare-api.onrender.com/api/chest`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/chest`, {
         method: 'POST',
         body: formData,
       });

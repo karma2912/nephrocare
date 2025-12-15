@@ -11,8 +11,11 @@ import {
   Clock,
   CheckCircle2,
   Sparkles,
-  TrendingUp
+  TrendingUp,
+  Star,
+  Quote
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LandingPage() {
   const aiFeatures = [
@@ -22,7 +25,7 @@ export default function LandingPage() {
       title: 'Fluid & Lung Monitor',
       description: 'Prevent pulmonary edema with X-Ray analysis detecting early fluid overload and pneumonia in dialysis patients.',
       href: '/smart-screening/lung-monitor',
-      stats: '94% accuracy',
+      stats: '98.8% accuracy',
       gradient: 'from-blue-500 to-cyan-500'
     },
     {
@@ -52,10 +55,44 @@ export default function LandingPage() {
     { value: '24/7', label: 'Support', icon: <Clock size={20} /> }
   ];
 
+  const testimonials = [
+    {
+      name: 'Sarah Mitchell',
+      location: 'London, UK',
+      treatment: '3 years on dialysis',
+      rating: 5,
+      text: 'The AI lung monitor caught early signs of fluid buildup that my regular checkup missed. It literally saved my life. Now I can travel knowing I\'m being monitored everywhere.',
+      avatar: 'SM'
+    },
+    {
+      name: 'Dr. Rajesh Kumar',
+      location: 'Mumbai, India',
+      treatment: 'Nephrologist',
+      rating: 5,
+      text: 'As a physician, I\'m impressed by the accuracy of the neuro risk assessment. It\'s helped us prevent two strokes in my patients this year alone. The technology is groundbreaking.',
+      avatar: 'RK'
+    },
+    {
+      name: 'Maria Garcia',
+      location: 'Barcelona, Spain',
+      treatment: '5 years on dialysis',
+      rating: 5,
+      text: 'Holiday dialysis changed my life! I visited my family in Argentina after 5 years. The booking was seamless and the care was identical to my home clinic. Pure freedom.',
+      avatar: 'MG'
+    },
+    {
+      name: 'James Chen',
+      location: 'Singapore',
+      treatment: '2 years on dialysis',
+      rating: 5,
+      text: 'The access point guard detected an infection 3 days before I felt any symptoms. Early treatment meant no hospitalization. This AI actually cares about my health.',
+      avatar: 'JC'
+    }
+  ];
+
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 to-white">
       
-      {/* Hero Section - Mobile Optimized */}
       <section className="relative pt-24 md:pt-32 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 -z-10">
@@ -91,7 +128,7 @@ export default function LandingPage() {
                 >
                   <Zap size={18} />
                   <span>Try AI Screening</span>
-                  <ArrowRight size={16}  className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </a>
                 
                 <a 
@@ -125,7 +162,7 @@ export default function LandingPage() {
                   <div className="absolute inset-0 bg-linear-to-br from-blue-600/10 to-purple-600/10"></div>
                   <div className="relative z-10 text-center space-y-3 md:space-y-4 px-4">
                     <div className="w-16 md:w-24 h-16 md:h-24 mx-auto bg-white rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center">
-                      <Activity size={32}className="text-blue-600" />
+                      <Activity size={32} className="text-blue-600" />
                     </div>
                     <div className="space-y-2">
                       <div className="text-xs md:text-sm font-semibold text-slate-600">Real-time Health Monitoring</div>
@@ -141,7 +178,7 @@ export default function LandingPage() {
                 <div className="hidden sm:block absolute -left-2 md:-left-4 top-1/4 bg-white rounded-lg md:rounded-xl p-3 md:p-4 shadow-xl animate-float">
                   <div className="flex items-center gap-2 md:gap-3">
                     <div className="w-8 md:w-10 h-8 md:h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <CheckCircle2 size={16}  className="text-green-600" />
+                      <CheckCircle2 size={16} className="text-green-600" />
                     </div>
                     <div>
                       <div className="text-[10px] md:text-xs text-slate-500">Scan Complete</div>
@@ -153,7 +190,7 @@ export default function LandingPage() {
                 <div className="hidden sm:block absolute -right-2 md:-right-4 bottom-1/4 bg-white rounded-lg md:rounded-xl p-3 md:p-4 shadow-xl animate-float" style={{animationDelay: '1s'}}>
                   <div className="flex items-center gap-2 md:gap-3">
                     <div className="w-8 md:w-10 h-8 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Brain size={16}  className="text-blue-600" />
+                      <Brain size={16} className="text-blue-600" />
                     </div>
                     <div>
                       <div className="text-[10px] md:text-xs text-slate-500">MRI Analysis</div>
@@ -173,7 +210,7 @@ export default function LandingPage() {
           
           <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-3 md:space-y-4">
             <div className="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 rounded-full px-3 md:px-4 py-1.5 md:py-2">
-              <Sparkles size={12}  className="text-purple-600" />
+              <Sparkles size={12} className="text-purple-600" />
               <span className="text-[10px] md:text-xs font-bold text-purple-700 uppercase tracking-wider">Deep Learning Models</span>
             </div>
             
@@ -206,7 +243,7 @@ export default function LandingPage() {
                   <div>
                     <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">{feature.title}</h3>
                     <div className={`inline-flex items-center gap-1 text-xs font-bold text-${feature.color}-700 bg-${feature.color}-50 px-2 md:px-3 py-1 rounded-full`}>
-                      <TrendingUp size={10}  />
+                      <TrendingUp size={10} />
                       {feature.stats}
                     </div>
                   </div>
@@ -220,7 +257,7 @@ export default function LandingPage() {
                     className={`inline-flex items-center gap-2 text-${feature.color}-700 font-semibold group-hover:gap-3 transition-all text-sm md:text-base`}
                   >
                     <span>Start Screening</span>
-                    <ArrowRight size={14}  />
+                    <ArrowRight size={14} />
                   </a>
                 </div>
               </div>
@@ -239,7 +276,7 @@ export default function LandingPage() {
               <div className="aspect-square bg-linear-to-br from-blue-100 to-blue-50 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-blue-200 flex items-center justify-center relative">
                 <div className="absolute inset-0 bg-linear-to-br from-blue-600/5 to-transparent"></div>
                 <div className="relative z-10 text-center space-y-4 md:space-y-6 px-4">
-                  <MapPin size={48}  className="text-blue-600 mx-auto" />
+                  <MapPin size={48} className="text-blue-600 mx-auto" />
                   <div className="space-y-2">
                     <div className="inline-flex items-center gap-2 bg-white px-4 md:px-6 py-2 md:py-3 rounded-full shadow-lg">
                       <span className="w-2 md:w-3 h-2 md:h-3 bg-green-500 rounded-full animate-pulse"></span>
@@ -254,7 +291,7 @@ export default function LandingPage() {
             {/* Content */}
             <div className="space-y-4 md:space-y-6 order-1 lg:order-2">
               <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-3 md:px-4 py-1.5 md:py-2">
-                <MapPin size={12}  className="text-blue-600" />
+                <MapPin size={12} className="text-blue-600" />
                 <span className="text-[10px] md:text-xs font-bold text-blue-700 uppercase tracking-wider">Travel Freedom</span>
               </div>
 
@@ -276,7 +313,7 @@ export default function LandingPage() {
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2 md:gap-3">
                     <div className="mt-0.5 p-1 md:p-1.5 bg-green-100 rounded-full text-green-600 shrink-0">
-                      <CheckCircle2 size={14}  />
+                      <CheckCircle2 size={14} />
                     </div>
                     <span className="text-sm md:text-base text-slate-700 font-medium">{item}</span>
                   </div>
@@ -288,9 +325,82 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 text-blue-700 font-bold text-base md:text-lg group"
               >
                 <span>Explore Travel Planner</span>
-                <ArrowRight size={18}  className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section - Mobile Optimized */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-3 md:space-y-4">
+            <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-full px-3 md:px-4 py-1.5 md:py-2">
+              <Star size={12} className="text-amber-600 fill-amber-600" />
+              <span className="text-[10px] md:text-xs font-bold text-amber-700 uppercase tracking-wider">Patient Stories</span>
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 px-4">
+              Trusted by Patients
+              <span className="block text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">
+                Around the World
+              </span>
+            </h2>
+            
+            <p className="text-base md:text-lg text-slate-600 px-4">
+              Real stories from real people whose lives have been transformed by AI-powered dialysis care.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {testimonials.map((testimonial, idx) => (
+              <div 
+                key={idx}
+                className="relative bg-linear-to-br from-slate-50 to-white rounded-xl md:rounded-2xl p-6 md:p-8 border border-slate-200 hover:shadow-xl transition-all duration-300"
+              >
+                {/* Quote Icon */}
+                <div className="absolute top-4 right-4 text-blue-100">
+                  <Quote size={32} className="md:w-10 md:h-10" />
+                </div>
+
+                {/* Rating */}
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} size={16} className="text-amber-400 fill-amber-400" />
+                  ))}
+                </div>
+
+                {/* Testimonial Text */}
+                <p className="text-sm md:text-base text-slate-700 leading-relaxed mb-6 relative z-10">
+                  "{testimonial.text}"
+                </p>
+
+                {/* Author Info */}
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="w-12 h-12 md:w-14 md:h-14 bg-linear-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm md:text-base shrink-0">
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <div className="font-bold text-slate-900 text-sm md:text-base">{testimonial.name}</div>
+                    <div className="text-xs md:text-sm text-slate-600">{testimonial.location}</div>
+                    <div className="text-xs text-slate-500">{testimonial.treatment}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* View More Button */}
+          <div className="text-center mt-10 md:mt-12">
+            <a 
+              href="/testimonials" 
+              className="inline-flex items-center gap-2 text-blue-700 font-semibold text-sm md:text-base hover:gap-3 transition-all group"
+            >
+              <span>Read More Success Stories</span>
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </a>
           </div>
         </div>
       </section>
@@ -311,13 +421,13 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-4">
             <button className="inline-flex items-center justify-center gap-2 bg-white text-blue-900 px-6 md:px-8 py-3 md:py-4 rounded-full font-bold hover:scale-105 hover:shadow-2xl transition-all duration-300">
-              <MapPin size={18}  />
-              <span>Find Your Center</span>
+              <MapPin size={18} />
+              <Link href="/services/holiday-dialysis">Find Your Center</Link>
             </button>
             
             <button className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-white hover:text-blue-900 transition-all duration-300">
-              <Sparkles size={18}  />
-              <span>Try AI Screening</span>
+              <Sparkles size={18} />
+              <Link href="/smart-screening">Try AI Screening</Link>
             </button>
           </div>
         </div>

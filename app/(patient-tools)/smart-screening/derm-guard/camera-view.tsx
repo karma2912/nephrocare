@@ -77,7 +77,7 @@ const CameraView = () => {
     formData.append('image', file);
 
     try {
-        const response = await fetch(`https://nephrocare-api.onrender.com/api/skin`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/skin`, {
             method: 'POST',
             body: formData,
         });

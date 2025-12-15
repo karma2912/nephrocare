@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Plane, Sun, Anchor, Mountain, Search } from 'lucide-react';
+import Link from 'next/link';
 
 const LOCATIONS = [
   { id: 1, name: 'Bali Center', type: 'Beach', coords: { top: '60%', left: '70%' } },
@@ -124,9 +125,9 @@ const HolidayDialysisPage = () => {
       
       <section className="bg-blue-900 text-white py-16 text-center">
         <h2 className="text-3xl font-bold mb-6">Ready to book your trip?</h2>
-        <button className="bg-white text-blue-900 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors">
-            Speak to a Coordinator
-        </button>
+        <Link href="/contact" className="bg-white text-blue-900 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors">
+            Book an appointment
+        </Link>
       </section>
 
     </div>

@@ -25,7 +25,7 @@ const AnalysisView = () => {
 
     try {
       // 1. Send to Flask Backend (Brain Endpoint)
-      const response = await fetch(`https://nephrocare-api.onrender.com/api/brain`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/brain`, {
         method: 'POST',
         body: formData,
       });
