@@ -17,8 +17,6 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // MOCK AUTH STATE: Change this to true to see the "Logged In" view
-  const isLoggedIn = false;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -28,7 +26,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Services", href: "/services" },
-    { name: "Doctors", href: "/doctors" },
+    { name: "About Us", href: "/about" },
     { name: "Holiday Dialysis", href: "/services/holiday-dialysis" },
     {
       name: "Smart Screening",
@@ -43,8 +41,8 @@ const Navbar = () => {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
-            ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 py-3"
-            : "bg-linear-to-b from-white/80 to-transparent backdrop-blur-sm py-5"
+            ? "bg-white shadow-lg shadow-slate-900/5 py-3"
+            : "bg-white backdrop-blur-sm py-5"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">

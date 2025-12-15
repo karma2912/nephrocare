@@ -42,7 +42,7 @@ export default function DietBotPage() {
     <div className="min-h-screen bg-slate-50 pt-20 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center gap-4 sticky top-20 z-10">
-         <Link href="/dashboard" className="text-slate-400 hover:text-slate-600">
+         <Link href="/" className="text-slate-400 hover:text-slate-600">
             <ChevronLeft size={24} />
          </Link>
          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
