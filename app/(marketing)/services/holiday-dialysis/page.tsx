@@ -10,6 +10,16 @@ const LOCATIONS = [
   { id: 3, name: 'London City', type: 'Urban', coords: { top: '25%', left: '45%' } },
   { id: 4, name: 'Dubai Marina', type: 'Urban', coords: { top: '45%', left: '55%' } },
   { id: 5, name: 'Kyoto Wellness', type: 'Culture', coords: { top: '35%', left: '80%' } },
+  { id: 6, name: 'New York Hub', type: 'Urban', coords: { top: '30%', left: '20%' } },
+  { id: 7, name: 'Santorini Escape', type: 'Beach', coords: { top: '40%', left: '50%' } },
+  { id: 8, name: 'Cape Town Retreat', type: 'Nature', coords: { top: '75%', left: '50%' } },
+  { id: 9, name: 'Rio de Janeiro', type: 'Beach', coords: { top: '65%', left: '30%' } },
+  { id: 10, name: 'Bangkok Vitality', type: 'Urban', coords: { top: '55%', left: '75%' } },
+  { id: 11, name: 'Sydney Harbour', type: 'Coastal', coords: { top: '80%', left: '85%' } },
+  { id: 12, name: 'Marrakech Oasis', type: 'Culture', coords: { top: '50%', left: '42%' } },
+  { id: 13, name: 'Iceland Nordic Spa', type: 'Nature', coords: { top: '15%', left: '40%' } },
+  { id: 14, name: 'Vancouver Greenway', type: 'Urban', coords: { top: '22%', left: '15%' } },
+  { id: 15, name: 'Maldives Serenity', type: 'Beach', coords: { top: '62%', left: '65%' } },
 ];
 
 const HolidayDialysisPage = () => {

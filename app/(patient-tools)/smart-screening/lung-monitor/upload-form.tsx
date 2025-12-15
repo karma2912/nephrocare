@@ -1,73 +1,108 @@
 'use client';
 
 import React, { useState } from 'react';
-import ModelUploader from '@/components/ai-tools/ModelUploader'; // Using your existing component
-import ResultCard from '@/components/ai-tools/ResultCard';       // Using your existing component
+import ModelUploader from '@/components/ai-tools/ModelUploader';
+import ResultCard from '@/components/ai-tools/ResultCard';
 import { motion } from 'framer-motion';
+import { Loader2, AlertTriangle } from 'lucide-react';
 
 const LungUploadForm = () => {
-  // In a real app, this state would be lifted or managed by the ModelUploader's onComplete callback
-  // For demo purposes, we will simulate the flow here.
-  
-  // NOTE: You might need to adjust ModelUploader to accept an 'onAnalysisComplete' prop
-  // or handle the state inside ModelUploader. 
-  // Assuming ModelUploader handles the visual upload and we just show results for now:
-  
-  const [hasResult, setHasResult] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Mock function to simulate "Receiving data from Uploader"
-  // You would pass this to ModelUploader
-  const handleAnalysisComplete = () => {
-    setTimeout(() => setHasResult(true), 2500); // Wait for the "loading" bar in Uploader
+  const handleUpload = async (file: File) => {
+    setLoading(true);
+    setError('');
+    setResult(null);
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      // 1. Send to your Flask Backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/chest`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Prediction failed');
+
+      // 2. Set the data from Flask
+      setResult(data);
+    } catch (err: any) {
+      console.error(err);
+      setError('Failed to connect to AI Server. Is app.py running?');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="p-8 md:p-12">
-      {!hasResult ? (
+      {!result ? (
         <div className="space-y-8">
-           {/* Instructions */}
-           <div className="grid grid-cols-2 gap-4 text-sm text-slate-500 mb-6">
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <span className="font-bold block text-slate-800 mb-1">Correct View</span>
-                Patient standing upright, PA view.
-              </div>
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <span className="font-bold block text-slate-800 mb-1">File Size</span>
-                Max 10MB (JPG, PNG, DCM).
-              </div>
-           </div>
+           <ModelUploader onFileSelect={handleUpload} /> 
+           
+           {loading && (
+             <div className="text-center space-y-3">
+               <Loader2 className="animate-spin h-8 w-8 text-blue-600 mx-auto" />
+               <p className="text-blue-600 font-medium animate-pulse">
+                 Analyzing Lung Opacity & Fluid Levels...
+               </p>
+             </div>
+           )}
 
-           {/* The Component we made earlier */}
-           {/* Add an onClick wrapper here just to demo the transition for the user */}
-           <div onClick={handleAnalysisComplete}> 
-             <ModelUploader />
-             <p className="text-center text-xs text-slate-400 mt-4">(Click the upload box to simulate a successful analysis)</p>
-           </div>
+           {error && (
+             <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-2">
+               <AlertTriangle size={20} /> {error}
+             </div>
+           )}
         </div>
       ) : (
-        <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="mb-6 flex items-center justify-between">
             <h3 className="text-xl font-bold text-slate-900">Analysis Results</h3>
-            <button 
-                onClick={() => setHasResult(false)}
-                className="text-sm text-blue-600 font-medium hover:underline"
-            >
+            <button onClick={() => setResult(null)} className="text-sm text-blue-600 hover:underline">
                 Upload Another
             </button>
           </div>
 
-          <ResultCard 
-            score={72} 
-            riskLevel="Moderate" 
-            biomarkers={[
-                { name: 'Fluid Accumulation', value: 'Detected (Base)', status: 'warning' },
-                { name: 'Cardiomegaly', value: 'Negative', status: 'ok' },
-                { name: 'Lung Clarity', value: '85%', status: 'ok' }
-            ]} 
-          />
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left: The AI Result Card */}
+            <ResultCard 
+                score={Math.round(result.confidence * 100)} 
+                riskLevel={result.diagnosis === 'Normal' ? 'Low' : 'High'} 
+                biomarkers={[
+                    { name: 'Primary Diagnosis', value: result.diagnosis, status: result.diagnosis === 'Normal' ? 'ok' : 'warning' },
+                    { name: 'Confidence', value: `${(result.confidence * 100).toFixed(1)}%`, status: 'ok' }
+                ]} 
+            />
+
+            {/* Right: GradCAM Heatmap & Summary */}
+            <div className="space-y-6">
+                <div className="bg-slate-900 rounded-2xl p-1 overflow-hidden">
+                    <p className="text-center text-white text-xs py-2 font-bold uppercase tracking-wider">AI Attention Heatmap</p>
+                    {/* Display the Base64 Heatmap from Flask */}
+                    <img 
+                        src={`data:image/jpeg;base64,${result.heatmap}`} 
+                        alt="AI Heatmap" 
+                        className="w-full h-64 object-cover rounded-xl"
+                    />
+                </div>
+                
+                <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                    <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                        🤖 AI Summary
+                    </h4>
+                    <p className="text-sm text-blue-800 leading-relaxed">
+                        {result.ai_summary}
+                    </p>
+                </div>
+            </div>
+          </div>
         </motion.div>
       )}
     </div>

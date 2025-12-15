@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Sparkles, ChevronLeft } from 'lucide-react';
+import { Send, User, Bot, Sparkles, ChevronLeft, Loader2 } from 'lucide-react'; // Added Loader2
 import Link from 'next/link';
 
 export default function DietBotPage() {
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // New loading state
   const [messages, setMessages] = useState<{role: 'user' | 'bot', text: string}[]>([
     { role: 'bot', text: 'Hello! I am your NephroCare Diet Assistant. I can help you find low-potassium recipes or check if a food is safe for your stage of CKD. What can I do for you today?' }
   ]);
@@ -17,23 +18,39 @@ export default function DietBotPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]); // Scroll when messages change or loading starts
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
     
-    // Add user message
-    const newMessages = [...messages, { role: 'user', text: input } as const];
-    setMessages(newMessages);
+    // 1. Add User Message immediately
+    const userMessage = input;
+    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setInput('');
+    setIsLoading(true); // Start loading
 
-    // Simulate Bot Response
-    setTimeout(() => {
-        setMessages(prev => [...prev, { 
-            role: 'bot', 
-            text: "That's a great question about your renal diet. Generally, you should look for low-sodium alternatives. Let me pull up a specific recipe..." 
-        }]);
-    }, 1000);
+    try {
+        // 2. Call the Next.js API Route (The Server)
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage }),
+        });
+
+        const data = await response.json();
+
+        // 3. Add Bot Response
+        if (response.ok) {
+            setMessages(prev => [...prev, { role: 'bot', text: data.text }]);
+        } else {
+            setMessages(prev => [...prev, { role: 'bot', text: "I'm having trouble connecting to the server right now." }]);
+        }
+    } catch (error) {
+        console.error("Chat Error:", error);
+        setMessages(prev => [...prev, { role: 'bot', text: "Sorry, something went wrong. Please try again." }]);
+    } finally {
+        setIsLoading(false); // Stop loading
+    }
   };
 
   const suggestions = ["Is banana safe?", "Low sodium dinner ideas", "How much water today?"];
@@ -51,7 +68,8 @@ export default function DietBotPage() {
          <div>
             <h1 className="font-bold text-slate-900">Renal Diet Bot</h1>
             <p className="text-xs text-green-600 flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"/> Online
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"/> 
+                {isLoading ? 'Thinking...' : 'Online'}
             </p>
          </div>
       </div>
@@ -76,6 +94,19 @@ export default function DietBotPage() {
                 </div>
             </div>
         ))}
+        
+        {/* Loading Bubble */}
+        {isLoading && (
+            <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center shrink-0">
+                    <Bot size={16} />
+                </div>
+                <div className="bg-white text-slate-500 border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    <span className="text-xs font-medium">Analyzing renal data...</span>
+                </div>
+            </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -88,7 +119,8 @@ export default function DietBotPage() {
                     <button 
                         key={s} 
                         onClick={() => setInput(s)}
-                        className="whitespace-nowrap px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-full text-xs text-slate-600 font-medium transition-colors"
+                        disabled={isLoading}
+                        className="whitespace-nowrap px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-full text-xs text-slate-600 font-medium transition-colors disabled:opacity-50"
                     >
                         {s}
                     </button>
@@ -100,13 +132,15 @@ export default function DietBotPage() {
                     type="text" 
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                     placeholder="Ask about food, fluids, or recipes..."
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-full pl-6 pr-14 py-4 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    disabled={isLoading}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-full pl-6 pr-14 py-4 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50"
                  />
                  <button 
                     onClick={handleSend}
-                    className="absolute right-2 p-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition-colors"
+                    disabled={isLoading || !input.trim()}
+                    className="absolute right-2 p-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition-colors disabled:bg-slate-300"
                  >
                     <Send size={20} />
                  </button>
